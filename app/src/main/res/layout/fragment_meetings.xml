@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MeetingsFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MeetingsActivity"
+        android:orientation="vertical"
+        >
+
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <TimePicker
+
+                    android:id="@+id/alarmTimePickerMeetings"
+                    android:layout_width="350dp"
+                    android:layout_height="372dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="7dp"
+                    android:layout_marginRight="8dp"
+                    android:timePickerMode="clock"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Select Time"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:id="@+id/tvInMeetings"/>
+
+                <DatePicker
+                    android:id="@+id/datePickerMeetings"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_gravity="center_horizontal"
+                    android:calendarViewShown="false"
+                    android:datePickerMode="spinner" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    >
+
+                    <Button
+                        android:id="@+id/btnSetAlarmInMeetings"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="set alarm"/>
+
+                    <Button
+                        android:id="@+id/btnStopAlarmInMeetings"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="stop alarm"/>
+
+
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+
+
+    </LinearLayout>
+
+</FrameLayout>

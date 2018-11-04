@@ -16,14 +16,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".HomeActivity" />
-        <activity android:name=".MeetingsActivity" />
         <activity android:name=".SignupActivity" />
-        <activity android:name=".ExerciseActivity" />
-        <activity android:name=".ExpencesActivity" />
-        <activity android:name=".AimActivity" />
-        <activity android:name=".DietActivity" />
-        <activity android:name=".MedicinesActivity"></activity>
+
+        <receiver android:name=".MyReceiver" />
+
+        <service
+            android:name=".AlarmService"
+            android:enabled="true"></service>
+
+        <activity
+            android:name=".HomeActivity"
+            android:label="@string/title_activity_home"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

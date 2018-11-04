@@ -15,6 +15,8 @@ public class MyDatabase extends SQLiteOpenHelper {
     public static final String COL_NAME = "name";
     public static final String COL_UNAME = "username";
     public static final String COL_PASSWORD = "password";
+    public static final String COL_STATUS = "status";
+    SQLiteDatabase db;
 
 
     public MyDatabase(Context context) {
@@ -24,8 +26,9 @@ public class MyDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        this.db = db;
         db.execSQL("create table "+TABLE_NAME+" ( "+ COL_ID +" INTEGER PRIMARY KEY AUTOINCREMENT ," +
-                COL_NAME+"  TEXT , "+COL_UNAME+" TEXT , "+COL_PASSWORD+" INTEGER)");
+                COL_NAME+"  TEXT , "+COL_UNAME+" TEXT , "+COL_PASSWORD+" TEXT ,"+COL_STATUS+" TEXT)");
     }
 
     @Override
@@ -40,6 +43,7 @@ public class MyDatabase extends SQLiteOpenHelper {
         contentValues.put(COL_NAME , name);
         contentValues.put(COL_UNAME , uname);
         contentValues.put(COL_PASSWORD , pass);
+        contentValues.put(COL_STATUS , "false");
         long result = db.insert(TABLE_NAME , null , contentValues);
         if (result == -1)
             return false;
@@ -64,6 +68,20 @@ public class MyDatabase extends SQLiteOpenHelper {
 
     }
 
+    public String checkUserLogin(){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        // Cursor res = db.rawQuery("SELECT * FROM "+TABLE_NAME, new String[]{name});
+        Cursor cur =  db.query(TABLE_NAME,null,COL_STATUS+" = ?" ,
+                new String[]{COL_STATUS},null,null,null);
+
+        StringBuffer buffer = new StringBuffer();
+        while(cur.moveToNext()){
+            buffer.append(cur.getString(0));
+        }
+        return buffer.toString();
+    }
+
     public boolean updateData(String id , String name , String username , String password){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -77,6 +95,35 @@ public class MyDatabase extends SQLiteOpenHelper {
         else
             return true;
     }
+
+    /*public boolean updateStatus(String status){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL_STATUS , status);
+        long result = db.update(TABLE_NAME , contentValues , COL_STATUS+"= ?",
+                                                                    new String[] {status});
+        if (result == -1)
+            return false;
+        else
+            return true;
+    }*/
+
+
+    public boolean doesTableExist() {
+        Cursor cursor = db.rawQuery("select DISTINCT tbl_name from sqlite_master where tbl_name = '"
+                + TABLE_NAME + "'", null);
+
+        if (cursor != null) {
+            if (cursor.getCount() > 0) {
+
+                cursor.close();
+                return true;
+            }
+            cursor.close();
+        }
+        return false;
+    }
+
 
     public int DeleteData(String id){
         SQLiteDatabase db = this.getWritableDatabase();
