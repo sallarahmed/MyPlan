@@ -1,6 +1,7 @@
 package com.naveed.myplan;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -17,7 +18,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import static com.naveed.myplan.SignupActivity.MY_PREFS_NAME;
+import static com.naveed.myplan.SignupActivity.PREF_NAME;
+import static com.naveed.myplan.SignupActivity.PREF_PASSWORD;
+import static com.naveed.myplan.SignupActivity.PREF_STATUS;
+import static com.naveed.myplan.SignupActivity.PREF_USERNAME;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener ,
         AimFragment.OnFragmentInteractionListener , DietFragment.OnFragmentInteractionListener ,
@@ -28,14 +36,44 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     String[] values = {"Aim", "Diet", "Meetings", "Exercise",
             "Medicines", "Expances"};
 
+
     MyDatabase db;
     NavigationView navigationView;
+    SharedPreferences prefs;
+    String prefsUname , prefsPass , prefsName;
+    boolean status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setupRefs();
+
+
+
+
+
+        navigationView = findViewById(R.id.nav_view);
+        final Menu menu = navigationView.getMenu();
+        for (int i = 0; i < values.length; i++) {
+            menu.add(values[i]);
+        }
+        View headerView = navigationView.getHeaderView(0);
+        //    ImageView drawerImage = headerView.findViewById(R.id.drawer_image);
+        TextView drawername =  headerView.findViewById(R.id.navName);
+        TextView drawerusername =  headerView.findViewById(R.id.navUsername);
+        //     drawerImage.setImageDrawable(R.drawable.ic_user);
+        drawername.setText(prefsName);
+        drawerusername.setText(prefsUname);
+
+
+        navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void setupRefs() {
+
         setContentView(R.layout.activity_home);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         db = new MyDatabase(this);
         getSupportFragmentManager().beginTransaction().
@@ -48,23 +86,55 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        navigationView = findViewById(R.id.nav_view);
-        final Menu menu = navigationView.getMenu();
-        for (int i = 0; i < values.length; i++) {
-            menu.add(values[i]);
+        checkUserLogin();
+    }
+
+    private void checkUserLogin() {
+
+        prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+        prefsUname = prefs.getString(PREF_USERNAME, null);
+        prefsPass = prefs.getString(PREF_PASSWORD, null);
+        status = prefs.getBoolean(PREF_STATUS, false);
+
+
+        if (prefsUname != null && prefsPass != null) {
+
+            if (status){
+                prefsName = prefs.getString(PREF_NAME, "No Name");
+
+            }else {
+
+                Log.e("My Plan", "checkUserLogin: In Home");
+                Log.e("checkUserLogin: ",Boolean.toString(status));
+                startActivity(new Intent(this , MainActivity.class));
+            }
+
+        }else if (!status) {
+            startActivity(new Intent(this , SignupActivity.class));
+
         }
 
-        navigationView.setNavigationItemSelectedListener(this);
+
+
     }
 
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
+
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if (!status){
+                super.onBackPressed();
+            }else{
+                System.exit(0);
+            }
+
+            //super.onBackPressed();
         }
+
+
     }
 
 
@@ -83,14 +153,21 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_log_out) {
+            SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+            editor.putBoolean(PREF_STATUS , false);
+            editor.apply();
+            startActivity(new Intent(HomeActivity.this , MainActivity.class));
+            Log.e("in Signout :", Boolean.toString(prefs.getBoolean(PREF_STATUS , true)));
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
+
+
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.

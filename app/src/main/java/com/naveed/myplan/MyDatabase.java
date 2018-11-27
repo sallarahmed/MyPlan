@@ -5,17 +5,21 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.annotation.Nullable;
 
 public class MyDatabase extends SQLiteOpenHelper {
 
-    public static final String DATABASE_NAME = "login.db";
-    public static final String TABLE_NAME = "login_table";
+    public static final String DATABASE_NAME = "my_plan.db";
+    public static final String TABLE_AIM = "aim_table";
+    public static final String TABLE_DIET = "diet_table";
+    public static final String TABLE_MEETINGS = "meetings_table";
+    public static final String TABLE_EXERCISE = "exercise_table";
+    public static final String TABLE_MEDICINE = "medicine_table";
+    public static final String TABLE_EXPANCES = "expances_table";
+
     public static final String COL_ID = "id";
-    public static final String COL_NAME = "name";
-    public static final String COL_UNAME = "username";
-    public static final String COL_PASSWORD = "password";
-    public static final String COL_STATUS = "status";
+    public static final String COL_TITLE = "title";
+    public static final String COL_DESC = "description";
+
     SQLiteDatabase db;
 
 
@@ -27,91 +31,77 @@ public class MyDatabase extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         this.db = db;
-        db.execSQL("create table "+TABLE_NAME+" ( "+ COL_ID +" INTEGER PRIMARY KEY AUTOINCREMENT ," +
-                COL_NAME+"  TEXT , "+COL_UNAME+" TEXT , "+COL_PASSWORD+" TEXT ,"+COL_STATUS+" TEXT)");
+        db.execSQL("create table "+TABLE_AIM+" ( "+ COL_ID +" INTEGER PRIMARY KEY AUTOINCREMENT ," +
+                COL_TITLE+"  TEXT , "+COL_DESC+" TEXT )");
+
+        db.execSQL("create table "+TABLE_DIET+" ( "+ COL_ID +" INTEGER PRIMARY KEY AUTOINCREMENT ," +
+                COL_TITLE+"  TEXT , "+COL_DESC+" TEXT )");
+
+        db.execSQL("create table "+TABLE_MEETINGS+" ( "+ COL_ID +" INTEGER PRIMARY KEY AUTOINCREMENT ," +
+                COL_TITLE+"  TEXT , "+COL_DESC+" TEXT )");
+
+        db.execSQL("create table "+TABLE_EXERCISE+" ( "+ COL_ID +" INTEGER PRIMARY KEY AUTOINCREMENT ," +
+                COL_TITLE+"  TEXT , "+COL_DESC+" TEXT )");
+
+        db.execSQL("create table "+TABLE_MEDICINE+" ( "+ COL_ID +" INTEGER PRIMARY KEY AUTOINCREMENT ," +
+                COL_TITLE+"  TEXT , "+COL_DESC+" TEXT )");
+
+        db.execSQL("create table "+TABLE_EXPANCES+" ( "+ COL_ID +" INTEGER PRIMARY KEY AUTOINCREMENT ," +
+                COL_TITLE+"  TEXT , "+COL_DESC+" TEXT )");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS "+TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_AIM);
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_DIET);
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_MEETINGS);
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_EXERCISE);
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_MEDICINE);
+        db.execSQL("DROP TABLE IF EXISTS "+TABLE_EXPANCES);
         onCreate(db);
     }
 
-    public boolean insertData(String name , String uname , String pass){
+    public boolean insertData(String title , String desc , String tableName){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_NAME , name);
-        contentValues.put(COL_UNAME , uname);
-        contentValues.put(COL_PASSWORD , pass);
-        contentValues.put(COL_STATUS , "false");
-        long result = db.insert(TABLE_NAME , null , contentValues);
+        contentValues.put(COL_TITLE , title);
+        contentValues.put(COL_DESC , desc);
+        long result = db.insert(tableName , null , contentValues);
         if (result == -1)
             return false;
         else
             return true;
     }
 
-    public Cursor getAllData(){
+    public Cursor getAllData(String tableName){
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor res = db.rawQuery("SELECT * FROM "+TABLE_NAME , null);
+        Cursor res = db.rawQuery("SELECT * FROM "+tableName, null);
 
         return res;
 
     }
 
-    public Cursor verifyCredentials(String uname , String pass){
-        SQLiteDatabase db = this.getWritableDatabase();
-        // Cursor res = db.rawQuery("SELECT * FROM "+TABLE_NAME, new String[]{name});
-        Cursor cur =  db.query(TABLE_NAME,null,COL_UNAME+" = ? AND "+COL_PASSWORD+" = ?" ,
-                new String[]{uname , pass},null,null,null);
-        return cur;
 
-    }
 
-    public String checkUserLogin(){
 
-        SQLiteDatabase db = this.getWritableDatabase();
-        // Cursor res = db.rawQuery("SELECT * FROM "+TABLE_NAME, new String[]{name});
-        Cursor cur =  db.query(TABLE_NAME,null,COL_STATUS+" = ?" ,
-                new String[]{COL_STATUS},null,null,null);
-
-        StringBuffer buffer = new StringBuffer();
-        while(cur.moveToNext()){
-            buffer.append(cur.getString(0));
-        }
-        return buffer.toString();
-    }
-
-    public boolean updateData(String id , String name , String username , String password){
+    public boolean updateTable(String id , String title , String desc , String tableName){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL_ID , id);
-        contentValues.put(COL_NAME , name);
-        contentValues.put(COL_UNAME , username);
-        contentValues.put(COL_PASSWORD , password);
-        long result = db.update(TABLE_NAME , contentValues , "id = ?",new String[] {id});
+        contentValues.put(COL_TITLE, title);
+        contentValues.put(COL_DESC , desc);
+        long result = db.update(tableName , contentValues , "id = ?",new String[] {id});
         if (result == -1)
             return false;
         else
             return true;
     }
 
-    /*public boolean updateStatus(String status){
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_STATUS , status);
-        long result = db.update(TABLE_NAME , contentValues , COL_STATUS+"= ?",
-                                                                    new String[] {status});
-        if (result == -1)
-            return false;
-        else
-            return true;
-    }*/
 
 
-    public boolean doesTableExist() {
+    public boolean doesTableExist(String tableName) {
         Cursor cursor = db.rawQuery("select DISTINCT tbl_name from sqlite_master where tbl_name = '"
-                + TABLE_NAME + "'", null);
+                + tableName + "'", null);
 
         if (cursor != null) {
             if (cursor.getCount() > 0) {
@@ -125,8 +115,8 @@ public class MyDatabase extends SQLiteOpenHelper {
     }
 
 
-    public int DeleteData(String id){
+    public int DeleteData(String id , String tableName){
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.delete(TABLE_NAME , "id = ?",new String[]{id});
+        return db.delete(tableName , "id = ?",new String[]{id});
     }
 }
