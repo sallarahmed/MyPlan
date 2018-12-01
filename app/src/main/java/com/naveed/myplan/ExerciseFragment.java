@@ -1,24 +1,37 @@
 package com.naveed.myplan;
 
+import android.annotation.TargetApi;
 import android.app.AlarmManager;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Random;
 
 import static android.content.Context.ALARM_SERVICE;
@@ -26,13 +39,10 @@ import static android.content.Context.ALARM_SERVICE;
 
 
 public class ExerciseFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+
     Context context;
     View mView;
-    Button btnStartAlarm , btnStopAlarm , btnChk;
+    Button btnStartAlarm , btnStopAlarm ;
     AlarmManager alarmManager;
     private PendingIntent pending_intent;
 
@@ -42,42 +52,21 @@ public class ExerciseFragment extends Fragment {
     Calendar calendar;
     Intent myIntent;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    String exerciseType ="";
+    String exerciseDiet = "";
 
-    private OnFragmentInteractionListener mListener;
 
-    public ExerciseFragment() {
-        // Required empty public constructor
-    }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment HomeFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ExerciseFragment newInstance(String param1, String param2) {
-        ExerciseFragment fragment = new ExerciseFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -85,6 +74,8 @@ public class ExerciseFragment extends Fragment {
 
         mView = inflater.inflate(R.layout.fragment_exercise, container, false);
         context = mView.getContext();
+
+
 
         alarmTextView = mView.findViewById(R.id.tvInExercise);
 
@@ -94,40 +85,13 @@ public class ExerciseFragment extends Fragment {
         btnStartAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calendar.add(Calendar.SECOND, 3);
-
-                final int hour;
-                final int minute;
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                    hour = alarmTimePicker.getHour();
-                    minute = alarmTimePicker.getMinute();
-                }else {
-                    hour = alarmTimePicker.getCurrentHour();
-                    minute = alarmTimePicker.getCurrentMinute();
-                }
-
-                Log.e("MyActivity", "In the receiver with " + hour + " and " + minute);
-                setAlarmText("You clicked a " + hour + " and " + minute);
 
 
-                calendar.set(Calendar.HOUR_OF_DAY, alarmTimePicker.getCurrentHour());
-                calendar.set(Calendar.MINUTE, alarmTimePicker.getCurrentMinute());
-
-                myIntent = new Intent(context, MyReceiver.class);
-                myIntent.putExtra("extra", "yes");
-                pending_intent = PendingIntent.getBroadcast(context, 0,
-                        myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-                alarmManager.set(AlarmManager.RTC_WAKEUP, calendar
-                        .getTimeInMillis(), pending_intent);
+          //  showRadioButtonDialog();
+            alertFormElements();
 
 
-                // now you should change the set Alarm text so it says something nice
 
-
-                setAlarmText("Alarm set to " + hour + ":" + minute);
-                Toast.makeText(context, "You set the alarm",
-                        Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -163,38 +127,117 @@ public class ExerciseFragment extends Fragment {
 
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
 
     public void setAlarmText(String alarmText) {
         alarmTextView.setText(alarmText);
     }
 
 
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    /*
+     * Show AlertDialog with some form elements.
+     */
+    public void alertFormElements() {
+
+        /*
+         * Inflate the XML view. activity_main is in
+         * res/layout/form_elements.xml
+         */
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View formElementsView = inflater.inflate(R.layout.form_elements,
+                null, false);
+
+
+
+        final RadioGroup genderRadioGroup = (RadioGroup) formElementsView
+                .findViewById(R.id.genderRadioGroup);
+
+        final EditText nameEditText = (EditText) formElementsView
+                .findViewById(R.id.nameEditText);
+
+        // the alert dialog
+        new AlertDialog.Builder(getActivity()).setView(formElementsView)
+                .setTitle("Select Exercise")
+                .setPositiveButton("Set Alarm", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        /*
+                         * Getting the value of selected RadioButton.
+                         */
+                        // get selected radio button from radioGroup
+                        int selectedId = genderRadioGroup
+                                .getCheckedRadioButtonId();
+
+                        // find the radiobutton by returned id
+                        RadioButton selectedRadioButton = (RadioButton) formElementsView
+                                .findViewById(selectedId);
+                        if (selectedRadioButton != null) {
+                            exerciseType = selectedRadioButton.getText().toString();
+
+                        }
+                        /*
+                         * Getting the value of an EditText.
+                         */
+                      //  toastString += "Name is: "  + "!\n";
+                           exerciseDiet = "Your Diet is "+nameEditText.getText()+" Daily";
+
+                  calendar.add(Calendar.SECOND, 3);
+
+                final int hour;
+                final int minute;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    hour = alarmTimePicker.getHour();
+                    minute = alarmTimePicker.getMinute();
+                }else {
+                    hour = alarmTimePicker.getCurrentHour();
+                    minute = alarmTimePicker.getCurrentMinute();
+                }
+
+                Log.e("MyActivity", "In the receiver with " + hour + " and " + minute);
+                setAlarmText("You clicked a " + hour + " and " + minute);
+
+
+                calendar.set(Calendar.HOUR_OF_DAY, alarmTimePicker.getCurrentHour());
+                calendar.set(Calendar.MINUTE, alarmTimePicker.getCurrentMinute());
+
+                myIntent = new Intent(context, MyReceiver.class);
+                myIntent.putExtra("extra", "yes");
+                pending_intent = PendingIntent.getBroadcast(context, 0,
+                        myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                alarmManager.set(AlarmManager.RTC_WAKEUP, calendar
+                        .getTimeInMillis(), pending_intent);
+
+
+                // now you should change the set Alarm text so it says something nice
+
+
+                setAlarmText("Alarm set to " + hour + ":" + minute);
+                Toast.makeText(context, "You set the alarm",
+                        Toast.LENGTH_SHORT).show();
+
+
+
+
+
+
+                        dialog.cancel();
+                    }
+
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                Toast.makeText(getActivity(), getActivity().getTitle(), Toast.LENGTH_SHORT).show();
+
+                dialog.cancel();
+
+            }
+        }).show();
     }
+
+
+
+
+
 }

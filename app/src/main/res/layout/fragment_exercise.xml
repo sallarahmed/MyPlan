@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/tvInExercise"
-            android:text="Set Alarm"
+            android:text="Set Exercise Time"
             android:layout_gravity="center_horizontal"
             android:textSize="20sp"
             android:textStyle="bold"/>
@@ -33,19 +33,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
+            android:layout_marginTop="20dp"
             >
 
             <Button
                 android:id="@+id/btnSetAlarmInExercise"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="set alarm"/>
+                android:layout_width="150dp"
+                android:layout_height="60dp"
+                android:text="set alarm"
+                android:background="@drawable/roundbuttons"
+                android:textColor="@android:color/white"/>
 
             <Button
                 android:id="@+id/btnStopAlarmInExercise"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="stop alarm"/>
+                android:layout_width="150dp"
+                android:layout_height="60dp"
+                android:text="stop alarm"
+                android:background="@drawable/roundbuttons"
+                android:textColor="@android:color/white"/>
 
 
 

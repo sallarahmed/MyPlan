@@ -33,8 +33,9 @@
 
 
         <EditText
+            android:drawableLeft="@drawable/ic_username1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="35dp"
             android:layout_margin="20dp"
             android:hint="Username"
             android:id="@+id/et_username_main"
@@ -44,8 +45,9 @@
 
 
         <EditText
+            android:drawableLeft="@drawable/ic_pass1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="35dp"
             android:layout_margin="20dp"
             android:hint="Password"
             android:id="@+id/et_password_main"

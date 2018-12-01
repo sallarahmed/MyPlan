@@ -27,14 +27,11 @@ import static com.naveed.myplan.SignupActivity.PREF_PASSWORD;
 import static com.naveed.myplan.SignupActivity.PREF_STATUS;
 import static com.naveed.myplan.SignupActivity.PREF_USERNAME;
 
-public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener ,
-        AimFragment.OnFragmentInteractionListener , DietFragment.OnFragmentInteractionListener ,
-        MeetingsFragment.OnFragmentInteractionListener ,ExerciseFragment.OnFragmentInteractionListener,
-        MedicinesFragment.OnFragmentInteractionListener , ExpancesFragment.OnFragmentInteractionListener {
+public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
 
-    String[] values = {"Aim", "Diet", "Meetings", "Exercise",
-            "Medicines", "Expances"};
+     String[] values = {"Aim", "Diet", "Meetings", "Exercise",
+            "Medicines", "Expanses"};
 
 
     MyDatabase db;
@@ -65,6 +62,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         //     drawerImage.setImageDrawable(R.drawable.ic_user);
         drawername.setText(prefsName);
         drawerusername.setText(prefsUname);
+
+
 
 
         navigationView.setNavigationItemSelectedListener(this);
@@ -118,6 +117,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+
+
+
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -128,7 +131,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             if (!status){
                 super.onBackPressed();
             }else{
-                System.exit(0);
+                System.runFinalizersOnExit(true);
             }
 
             //super.onBackPressed();
@@ -153,6 +156,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
+
         if (id == R.id.action_log_out) {
             SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
             editor.putBoolean(PREF_STATUS , false);
@@ -160,6 +164,31 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             startActivity(new Intent(HomeActivity.this , MainActivity.class));
             Log.e("in Signout :", Boolean.toString(prefs.getBoolean(PREF_STATUS , true)));
             return true;
+        }else if (id == R.id.action_add){
+            String title = (String) this.getTitle();
+            if (title.equals(values[0])){
+                Toast.makeText(this, "Please select specific task to add :"+title
+                                                            , Toast.LENGTH_SHORT).show();
+            }else if (title.equals(values[1])){
+                Toast.makeText(this, "Please select specific task to add :"+title
+                                                            , Toast.LENGTH_SHORT).show();
+            }else if (title.equals(values[2])){
+                Toast.makeText(this, "Please select specific task to add :"+title
+                                                            , Toast.LENGTH_SHORT).show();
+            }else if (title.equals(values[3])){
+                Toast.makeText(this, "Please select specific task to add :"+title
+                                                              , Toast.LENGTH_SHORT).show();
+            }else if (title.equals(values[4])){
+                Toast.makeText(this, "Please select specific task to add :"+title
+                                                              , Toast.LENGTH_SHORT).show();
+            }else if (title.equals(values[5])){
+                Toast.makeText(this, "Please select specific task to add :"+title
+                                                            , Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(this, "Please select specific task to add :"+title
+                                                            , Toast.LENGTH_SHORT).show();
+            }
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -223,13 +252,10 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private Fragment callFragment(int pos){
         Fragment[]fragments = new Fragment[]{
                 new AimFragment() , new DietFragment() , new MeetingsFragment() ,
-                new ExerciseFragment(), new MedicinesFragment() , new ExpancesFragment() };
+                new ExerciseFragment(), new MedicinesFragment() , new ExpancesFragment() ,
+                new ExerciseListFragment() , new MeetingsListFragment()};
         return fragments[pos];
     }
 
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
 }

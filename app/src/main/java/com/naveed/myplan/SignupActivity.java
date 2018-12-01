@@ -12,7 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class SignupActivity extends AppCompatActivity {
-    MyDatabase db;
+
     Button btnSinup;
     EditText etName , etUname , etPass , etcPass;
     public static String MY_PREFS_NAME = "myprefs";
@@ -27,7 +27,6 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         setTitle("Sign Up");
-        db = new MyDatabase(this);
         etName = findViewById(R.id.et_name_signup);
         etUname = findViewById(R.id.et_username_signup);
         etPass = findViewById(R.id.et_password_signup);

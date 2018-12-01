@@ -11,7 +11,9 @@
 
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_gravity="center"
@@ -26,7 +28,7 @@
 
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:text="@string/app_name"
             android:textSize="20sp"
             android:layout_gravity="center_horizontal"/>
@@ -35,49 +37,58 @@
 
 
             <EditText
+                android:drawableLeft="@drawable/ic_name1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="35dp"
                 android:layout_margin="20dp"
                 android:hint="Name"
                 android:id="@+id/et_name_signup"
                 android:background="@drawable/roundtv"
-                android:textAlignment="center"/>
+                android:textAlignment="center"
+                android:singleLine="true" />
 
 
 
             <EditText
+                android:drawableLeft="@drawable/ic_username1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="35dp"
                 android:layout_margin="20dp"
-                android:hint="Username"
+                android:hint="Email"
                 android:id="@+id/et_username_signup"
                 android:background="@drawable/roundtv"
-                android:textAlignment="center"/>
+                android:textAlignment="center"
+                android:singleLine="true"
+                android:inputType="textEmailAddress"/>
 
 
 
 
             <EditText
+                android:drawableLeft="@drawable/ic_pass1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="35dp"
                 android:layout_margin="20dp"
                 android:hint="Password"
                 android:id="@+id/et_password_signup"
                 android:inputType="textPassword"
                 android:background="@drawable/roundtv"
-                android:textAlignment="center"/>
+                android:textAlignment="center"
+                android:singleLine="true" />
 
 
 
             <EditText
+                android:drawableLeft="@drawable/ic_pass1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="35dp"
                 android:layout_margin="20dp"
                 android:hint="Confirm Password"
                 android:id="@+id/et_c_password_signup"
                 android:inputType="textPassword"
                 android:background="@drawable/roundtv"
-                android:textAlignment="center"/>
+                android:textAlignment="center"
+                android:singleLine="true" />
 
 
         <Button
