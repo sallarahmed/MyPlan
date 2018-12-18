@@ -55,33 +55,12 @@ public class SignupActivity extends AppCompatActivity {
                    }
                 }
 
-             //   addData(s_name , s_uname , s_pass);
 
             }
         });
 
 
     }
-
-
-  /*  private void addData(String name , String uname , String pass){
-
-        boolean isInserted = db.insertData(name , uname , pass);
-        if (isInserted){
-            Toast.makeText(SignupActivity.this,
-                    "Data Inserted Successfully", Toast.LENGTH_SHORT).show();
-        }else{
-            Toast.makeText(SignupActivity.this,
-                    "Data Insertion Failed", Toast.LENGTH_SHORT).show();
-        }
-    }*/
-
-   /* private void checkUserLogedin() {
-        boolean status = db.doesTableExist();
-        if (!status) {
-            startActivity(new Intent(this, MainActivity.class));
-        }
-    }*/
 
 
 

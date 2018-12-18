@@ -21,12 +21,13 @@ public class AlarmService extends Service {
     private Context context;
     MediaPlayer mMediaPlayer;
     private int startId;
+    MyDatabase mDatabase ;
 
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        Log.e("MyActivity", "In the Richard service");
+        Log.e("MyActivity", "In the service");
         return null;
     }
 
@@ -37,35 +38,31 @@ public class AlarmService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
-
+        mDatabase = new MyDatabase(this);
         final NotificationManager mNM = (NotificationManager)
                 getSystemService(NOTIFICATION_SERVICE);
 
-        Intent intent1 = new Intent(this.getApplicationContext(), MainActivity.class);
-        PendingIntent pIntent = PendingIntent.getActivity(this, 0, intent1, 0);
+        Intent intent1 = new Intent(this.getApplicationContext(), HomeActivity.class);
+        int id = intent.getExtras().getInt("id");
+
+        intent1.putExtra("title" , "T value");
+        intent1.putExtra("desc" , "D value");
+
+        PendingIntent pIntent = PendingIntent.getActivity(this, 22, intent1, 0);
 
         Notification mNotify  = new Notification.Builder(this)
-                .setContentTitle("Richard Dawkins is talking" + "!")
-                .setContentText("Click me!")
-                .setSmallIcon(R.drawable.ic_action_call)
+                .setContentTitle("Alarm called" + "!")
+                .setContentText("Click me!"+ id)
+                .setSmallIcon(R.drawable.logo)
                 .setContentIntent(pIntent)
                 .setAutoCancel(true)
                 .build();
 
+
+
+
+
         Toast.makeText(this, "Alarm called", Toast.LENGTH_SHORT).show();
-
-      /*  AlertDialog.Builder aBuilder = new AlertDialog.Builder(this);
-        aBuilder.setTitle("Message");
-        aBuilder.setMessage("Alarm Called");
-        aBuilder.setPositiveButton("Accept",new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog,int whichButton)
-            {
-
-            }});
-
-        aBuilder.create();
-        aBuilder.show();*/
-
 
 
 
@@ -98,34 +95,34 @@ public class AlarmService extends Service {
             Log.e("random number is ", String.valueOf(random_number));
 
             if (random_number == 1) {
-                mMediaPlayer = MediaPlayer.create(this, R.raw.richard_dawkins_1);
+                mMediaPlayer = MediaPlayer.create(this, R.raw.alarm_tone);
             }
             else if (random_number == 2) {
-                mMediaPlayer = MediaPlayer.create(this, R.raw.richard_dawkins_2);
+                mMediaPlayer = MediaPlayer.create(this, R.raw.alarm_tone);
             }
             else if (random_number == 3) {
-                mMediaPlayer = MediaPlayer.create(this, R.raw.richard_dawkins_3);
+                mMediaPlayer = MediaPlayer.create(this, R.raw.alarm_tone);
             }
             else if (random_number == 4) {
-                mMediaPlayer = MediaPlayer.create(this, R.raw.richard_dawkins_4);
+                mMediaPlayer = MediaPlayer.create(this, R.raw.alarm_tone);
             }
             else if (random_number == 5) {
-                mMediaPlayer = MediaPlayer.create(this, R.raw.richard_dawkins_5);
+                mMediaPlayer = MediaPlayer.create(this, R.raw.alarm_tone);
             }
             else if (random_number == 6) {
-                mMediaPlayer = MediaPlayer.create(this, R.raw.richard_dawkins_6);
+                mMediaPlayer = MediaPlayer.create(this, R.raw.alarm_tone);
             }
             else if (random_number == 7) {
-                mMediaPlayer = MediaPlayer.create(this, R.raw.richard_dawkins_7);
+                mMediaPlayer = MediaPlayer.create(this, R.raw.alarm_tone);
             }
             else if (random_number == 8) {
-                mMediaPlayer = MediaPlayer.create(this, R.raw.richard_dawkins_8);
+                mMediaPlayer = MediaPlayer.create(this, R.raw.alarm_tone);
             }
             else if (random_number == 9) {
-                mMediaPlayer = MediaPlayer.create(this, R.raw.richard_dawkins_9);
+                mMediaPlayer = MediaPlayer.create(this, R.raw.alarm_tone);
             }
             else {
-                mMediaPlayer = MediaPlayer.create(this, R.raw.richard_dawkins_1);
+                mMediaPlayer = MediaPlayer.create(this, R.raw.alarm_tone);
             }
             //mMediaPlayer = MediaPlayer.create(this, R.raw.richard_dawkins_1);
 
@@ -162,7 +159,6 @@ public class AlarmService extends Service {
             this.isRunning = false;
             this.startId = 0;
         }
-
 
         Log.e("MyActivity", "In the service");
 

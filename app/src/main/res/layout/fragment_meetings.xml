@@ -60,15 +60,17 @@
                         android:id="@+id/btnSetAlarmInMeetings"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="set alarm"/>
+                        android:text="set alarm"
+                        android:background="@drawable/roundbuttons"
+                        android:textColor="@android:color/white"/>
 
                     <Button
                         android:id="@+id/btnStopAlarmInMeetings"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="stop alarm"/>
-
-
+                        android:text="stop alarm"
+                        android:background="@drawable/roundbuttons"
+                        android:textColor="@android:color/white"/>
 
 
                 </LinearLayout>

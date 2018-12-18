@@ -1,13 +1,19 @@
 package com.naveed.myplan;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,24 +36,35 @@ import static com.naveed.myplan.SignupActivity.PREF_USERNAME;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+     String[] values = {"Diet", "Meetings", "Exercise", "Medicines", "Expanses"};
 
-     String[] values = {"Aim", "Diet", "Meetings", "Exercise",
-            "Medicines", "Expanses"};
-
-
+    private static final String BACK_STACK_ROOT_TAG = "root_fragment";
     MyDatabase db;
+    public static Context contextExcer;
     NavigationView navigationView;
     SharedPreferences prefs;
     String prefsUname , prefsPass , prefsName;
     boolean status;
+    public static boolean inside  = false;
+    MyBeansClass beans ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        contextExcer=this;
         setupRefs();
+        Bundle extras = getIntent().getExtras();
+        if (extras != null){
+            String tit = extras.getString("title");
+            String des = extras.getString("desc");
 
-
+            beans = new MyBeansClass(0 ,tit , des ,"" );
+            getSupportFragmentManager().beginTransaction().
+                    replace(R.id.content_home, new CancelAlarmFragment()).commit();
+        }else{
+            getSupportFragmentManager().beginTransaction().
+                    replace(R.id.content_home, callFragment(1)).commit();
+        }
 
 
 
@@ -63,9 +81,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         drawername.setText(prefsName);
         drawerusername.setText(prefsUname);
 
-
-
-
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -75,8 +90,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         db = new MyDatabase(this);
-        getSupportFragmentManager().beginTransaction().
-                replace(R.id.content_home, callFragment(0)).commit();
+        setTitle(values[0]);
+
 
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -91,7 +106,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     private void checkUserLogin() {
 
         prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
-        prefsUname = prefs.getString(PREF_USERNAME, null);
         prefsPass = prefs.getString(PREF_PASSWORD, null);
         status = prefs.getBoolean(PREF_STATUS, false);
 
@@ -118,6 +132,19 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
+    public void changeFragment(Fragment f) {
+        // Pop off everything up to and including the current tab
+        //this block of code saves fragment to backstack so don't call it if u don't want to save previous fragment to backstack
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.popBackStack(BACK_STACK_ROOT_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.content_home, f)
+                .addToBackStack(BACK_STACK_ROOT_TAG)
+                .commit();
+    }
+
+
 
 
 
@@ -128,13 +155,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            if (!status){
+            if (!status || inside){
+                inside = false ;
                 super.onBackPressed();
             }else{
-                System.runFinalizersOnExit(true);
+                finishAffinity();
             }
 
-            //super.onBackPressed();
+
         }
 
 
@@ -166,27 +194,32 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             return true;
         }else if (id == R.id.action_add){
             String title = (String) this.getTitle();
-            if (title.equals(values[0])){
-                Toast.makeText(this, "Please select specific task to add :"+title
+            switch (title){
+                case "Aim":
+                    Toast.makeText(this, "Please Select specific task to add :"+title
                                                             , Toast.LENGTH_SHORT).show();
-            }else if (title.equals(values[1])){
-                Toast.makeText(this, "Please select specific task to add :"+title
-                                                            , Toast.LENGTH_SHORT).show();
-            }else if (title.equals(values[2])){
-                Toast.makeText(this, "Please select specific task to add :"+title
-                                                            , Toast.LENGTH_SHORT).show();
-            }else if (title.equals(values[3])){
-                Toast.makeText(this, "Please select specific task to add :"+title
-                                                              , Toast.LENGTH_SHORT).show();
-            }else if (title.equals(values[4])){
-                Toast.makeText(this, "Please select specific task to add :"+title
-                                                              , Toast.LENGTH_SHORT).show();
-            }else if (title.equals(values[5])){
-                Toast.makeText(this, "Please select specific task to add :"+title
-                                                            , Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(this, "Please select specific task to add :"+title
-                                                            , Toast.LENGTH_SHORT).show();
+                    break;
+                case "Diet":
+                    // alert dialog builder call
+                    alertDietFormElements();
+                    break;
+                case "Meetings":
+                    changeFragment(callFragment(2));
+                    break;
+                case "Exercise":
+                    changeFragment(callFragment(3));
+                    break;
+                case "Medicines":
+                    changeFragment(callFragment(4));
+                    break;
+                case "Expanses":
+                    alertExpancesFormElements();
+                    break;
+                default:
+                    Toast.makeText(this, "Please Select specific task to add :"+title
+                            , Toast.LENGTH_SHORT).show();
+                    break;
+
             }
 
         }
@@ -207,6 +240,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         String nav_t = (String) item.getTitle();
         drawer.setFocusable(true);
+
 //        Toast.makeText(this, nav_id, Toast.LENGTH_SHORT).show();
 
         switch (nav_t){
@@ -223,19 +257,19 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case "Meetings":
                 setTitle(nav_t);
                 getSupportFragmentManager().beginTransaction().
-                        replace(R.id.content_home, callFragment(2)).commit();
+                        replace(R.id.content_home, callFragment(7)).commit();
                 break;
             case "Exercise":
                 setTitle(nav_t);
                 getSupportFragmentManager().beginTransaction().
-                        replace(R.id.content_home, callFragment(3)).commit();
+                        replace(R.id.content_home, callFragment(6)).commit();
                 break;
             case "Medicines":
                 setTitle(nav_t);
                 getSupportFragmentManager().beginTransaction().
-                        replace(R.id.content_home, callFragment(4)).commit();
+                        replace(R.id.content_home, callFragment(8)).commit();
                 break;
-            case "Expances":
+            case "Expanses":
                 setTitle(nav_t);
                 getSupportFragmentManager().beginTransaction().
                         replace(R.id.content_home, callFragment(5)).commit();
@@ -253,9 +287,115 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         Fragment[]fragments = new Fragment[]{
                 new AimFragment() , new DietFragment() , new MeetingsFragment() ,
                 new ExerciseFragment(), new MedicinesFragment() , new ExpancesFragment() ,
-                new ExerciseListFragment() , new MeetingsListFragment()};
+                new ExerciseListFragment() , new MeetingsListFragment() , new MedicinesListFragment()};
         return fragments[pos];
     }
+
+
+    private void alertDietFormElements() {
+
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View formElementsView = inflater.inflate(R.layout.form_elements_diet,
+                null, false);
+
+
+
+        final EditText etDiet = formElementsView
+                .findViewById(R.id.formEtDietInDiet);
+
+        final EditText etQty = formElementsView
+                .findViewById(R.id.formEtQtyInDiet);
+
+        // the alert dialog
+        new AlertDialog.Builder(this).setView(formElementsView)
+                .setTitle("Enter Details")
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        String diet = etDiet.getText().toString();
+                        String qty = etQty.getText().toString();
+
+                        addData(diet , qty ,"0",MyDatabase.TABLE_DIET);
+                        Toast.makeText(HomeActivity.this, diet+" : "+qty,
+                                Toast.LENGTH_SHORT).show();
+
+                        getSupportFragmentManager().beginTransaction().
+                                replace(R.id.content_home, callFragment(1)).commit();
+                        dialog.cancel();
+                    }
+
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.cancel();
+
+            }
+        }).show();
+    }
+
+
+    private void alertExpancesFormElements() {
+
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View formElementsView = inflater.inflate(R.layout.form_elements_expances,
+                null, false);
+
+
+
+        final EditText etName = formElementsView
+                .findViewById(R.id.formEtNameExpances);
+
+
+        final EditText etPrice = formElementsView
+                .findViewById(R.id.formEtPriceExpances);
+
+
+
+        // the alert dialog
+        new AlertDialog.Builder(this).setView(formElementsView)
+                .setTitle("Enter Details")
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        String name = etName.getText().toString();
+                        String qty = etPrice.getText().toString();
+
+                        addData(name  ,qty , "0" , MyDatabase.TABLE_EXPANCES);
+                      //  Toast.makeText(HomeActivity.this, n+" : "+q, Toast.LENGTH_SHORT).show();
+
+                        getSupportFragmentManager().beginTransaction().
+                                replace(R.id.content_home, callFragment(5)).commit();
+                        dialog.cancel();
+                    }
+
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.cancel();
+
+            }
+        }).show();
+    }
+
+
+
+    public void addData(String title , String desc , String timeId , String table){
+
+        Log.e( "addData Method : ",title+"  "+desc+"  "+timeId );
+
+        boolean insertData = db.insertData(title , desc , timeId , table);
+        if (insertData)
+            Toast.makeText(this, "Data inserted Successfully", Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
+
+    }
+
+
 
 
 }

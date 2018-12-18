@@ -39,11 +39,14 @@ public class MainActivity extends AppCompatActivity {
         prefsStatus = prefs.getBoolean(PREF_STATUS , false);
 
         setupRefs();
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         checkPrefs();
-
-
-
-
     }
 
     private void checkPrefs() {
@@ -59,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 etUname.setText(prefsUname);
             }
 
-        }else {
+        } else {
             startActivity(new Intent(this , SignupActivity.class));
         }
 
@@ -98,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }else{
                     startActivity(new Intent(MainActivity.this
-                                                            , SignupActivity.class));
+                                                        , SignupActivity.class));
                 }
 
             }

@@ -1,27 +1,21 @@
 package com.naveed.myplan;
 
-import android.annotation.TargetApi;
 import android.app.AlarmManager;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -29,13 +23,11 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Random;
 
 import static android.content.Context.ALARM_SERVICE;
-
+import static com.naveed.myplan.HomeActivity.contextExcer;
 
 
 public class ExerciseFragment extends Fragment {
@@ -45,16 +37,14 @@ public class ExerciseFragment extends Fragment {
     Button btnStartAlarm , btnStopAlarm ;
     AlarmManager alarmManager;
     private PendingIntent pending_intent;
-
+    MyDatabase myDb;
     private TimePicker alarmTimePicker;
     private TextView alarmTextView;
     private MyReceiver alarm;
     Calendar calendar;
     Intent myIntent;
-
+    int _id = (int) System.currentTimeMillis();
     String exerciseType ="";
-    String exerciseDiet = "";
-
 
 
 
@@ -71,10 +61,12 @@ public class ExerciseFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        if (!HomeActivity.inside) {
+            HomeActivity.inside = true;
+        }
         mView = inflater.inflate(R.layout.fragment_exercise, container, false);
         context = mView.getContext();
-
+        myDb = new MyDatabase(context);
 
 
         alarmTextView = mView.findViewById(R.id.tvInExercise);
@@ -100,16 +92,17 @@ public class ExerciseFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Toast.makeText(context, "Stop Alarm", Toast.LENGTH_SHORT).show();
-                int min = 1;
+             /*   int min = 1;
                 int max = 9;
 
                 Random r = new Random();
-                int random_number = r.nextInt(max - min + 1) + min;
-                Log.e("random number is ", String.valueOf(random_number));
+             //   int random_number = r.nextInt(max - min + 1) + min;
+                Log.e("random number is ", String.valueOf(random_number))*/;
 
 
                 myIntent.putExtra("extra", "no");
                 context.sendBroadcast(myIntent);
+                myIntent.putExtra("id", "");
 
                 alarmManager.cancel(pending_intent);
                 setAlarmText("Alarm canceled");
@@ -140,19 +133,17 @@ public class ExerciseFragment extends Fragment {
 
         /*
          * Inflate the XML view. activity_main is in
-         * res/layout/form_elements.xml
+         * res/layout/form_elements_exercise.xmlrcise.xml
          */
         LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View formElementsView = inflater.inflate(R.layout.form_elements,
+        final View formElementsView = inflater.inflate(R.layout.form_elements_exercise,
                 null, false);
 
 
 
-        final RadioGroup genderRadioGroup = (RadioGroup) formElementsView
-                .findViewById(R.id.genderRadioGroup);
+        final RadioGroup radioGroup = formElementsView
+                .findViewById(R.id.formExerciseRadioGroup);
 
-        final EditText nameEditText = (EditText) formElementsView
-                .findViewById(R.id.nameEditText);
 
         // the alert dialog
         new AlertDialog.Builder(getActivity()).setView(formElementsView)
@@ -165,26 +156,23 @@ public class ExerciseFragment extends Fragment {
                          * Getting the value of selected RadioButton.
                          */
                         // get selected radio button from radioGroup
-                        int selectedId = genderRadioGroup
+                        int selectedId = radioGroup
                                 .getCheckedRadioButtonId();
 
                         // find the radiobutton by returned id
-                        RadioButton selectedRadioButton = (RadioButton) formElementsView
+                        RadioButton selectedRadioButton = formElementsView
                                 .findViewById(selectedId);
                         if (selectedRadioButton != null) {
                             exerciseType = selectedRadioButton.getText().toString();
 
                         }
-                        /*
-                         * Getting the value of an EditText.
-                         */
-                      //  toastString += "Name is: "  + "!\n";
-                           exerciseDiet = "Your Diet is "+nameEditText.getText()+" Daily";
+
 
                   calendar.add(Calendar.SECOND, 3);
 
                 final int hour;
                 final int minute;
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     hour = alarmTimePicker.getHour();
                     minute = alarmTimePicker.getMinute();
@@ -199,41 +187,52 @@ public class ExerciseFragment extends Fragment {
 
                 calendar.set(Calendar.HOUR_OF_DAY, alarmTimePicker.getCurrentHour());
                 calendar.set(Calendar.MINUTE, alarmTimePicker.getCurrentMinute());
-
                 myIntent = new Intent(context, MyReceiver.class);
                 myIntent.putExtra("extra", "yes");
-                pending_intent = PendingIntent.getBroadcast(context, 0,
+                myIntent.putExtra("id" ,110);
+
+
+                pending_intent = PendingIntent.getBroadcast(context, 110,
                         myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                 alarmManager.set(AlarmManager.RTC_WAKEUP, calendar
                         .getTimeInMillis(), pending_intent);
 
-
                 // now you should change the set Alarm text so it says something nice
 
-
+                addData(exerciseType , hour+" : "+minute ,String.valueOf(_id));
                 setAlarmText("Alarm set to " + hour + ":" + minute);
                 Toast.makeText(context, "You set the alarm",
                         Toast.LENGTH_SHORT).show();
 
 
+                dialog.cancel();
 
 
-
-
-                        dialog.cancel();
                     }
 
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                Toast.makeText(getActivity(), getActivity().getTitle(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, getActivity().getTitle(), Toast.LENGTH_SHORT).show();
 
                 dialog.cancel();
 
             }
         }).show();
+    }
+
+    public void addData(String exType, String exDiet, String timeId){
+
+        Log.e( "addData Method : ",exType+"  "+exDiet+"  "+timeId );
+
+        boolean insertData = myDb.insertData(exType , exDiet , timeId , MyDatabase.TABLE_EXERCISE);
+        if (insertData)
+            Toast.makeText(context, "Data inserted Successfully", Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show();
+
     }
 
 

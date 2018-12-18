@@ -10,9 +10,12 @@ public class MyReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String state = intent.getExtras().getString("extra");
         Log.e("MyActivity", "In the receiver with " + state);
+        int id = intent.getExtras().getInt("id");
+        
 
         Intent serviceIntent = new Intent(context,AlarmService.class);
         serviceIntent.putExtra("extra", state);
+        serviceIntent.putExtra("id" , id);
 
         context.startService(serviceIntent);
     }
